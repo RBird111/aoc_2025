@@ -1,7 +1,9 @@
 mod day_1;
+mod day_2;
 
 fn main() {
-    print_day(day_1::Day1);
+    let days: Vec<Box<dyn Day>> = vec![Box::new(day_1::Day1), Box::new(day_2::Day2)];
+    days.into_iter().zip(1..).for_each(print_day);
 }
 
 pub trait Day {
@@ -9,10 +11,9 @@ pub trait Day {
     fn part_2(&self) -> String;
 }
 
-fn print_day<T: Day>(day: T) {
-    let part_1 = day.part_1();
-    println!("{part_1}");
-
-    let part_2 = day.part_2();
-    println!("{part_2}");
+#[allow(clippy::boxed_local)]
+fn print_day<T: Day + ?Sized>((day, id): (Box<T>, u32)) {
+    println!("[DAY {}]:", id);
+    println!("\tPART 1: {}", day.part_1());
+    println!("\tPART 2: {}\n", day.part_2());
 }
