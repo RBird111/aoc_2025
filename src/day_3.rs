@@ -1,4 +1,3 @@
-#![allow(unused)]
 pub struct Day3;
 
 impl crate::Day for Day3 {
@@ -8,9 +7,8 @@ impl crate::Day for Day3 {
     }
 
     fn part_2(&self) -> String {
-        // let input = include_str!("../data/day_3.txt");
-        // Self::solve_part_2(input).to_string()
-        String::new()
+        let input = include_str!("../data/day_3.txt");
+        Self::solve_part_2(input).to_string()
     }
 }
 
@@ -18,7 +16,7 @@ impl Day3 {
     fn solve_part_1(input: &str) -> u64 {
         let data = Day3::process_input(input);
         data.into_iter()
-            .filter_map(|mut arr| {
+            .filter_map(|arr| {
                 let (l, mut r) = arr[..arr.len() - 1].iter().fold((0, 0), |(l, r), &n| {
                     if n > l {
                         (n, 0)
@@ -37,7 +35,25 @@ impl Day3 {
     fn solve_part_2(input: &str) -> u64 {
         let data = Day3::process_input(input);
         data.into_iter()
-            .map(|mut arr| arr.into_iter().sum::<u64>())
+            .map(|arr| {
+                let n = arr.len();
+                (1..13)
+                    .rev()
+                    .map(|rem| n - rem + 1)
+                    .scan(0, |pos, end| {
+                        let best = arr[*pos..end].iter().max()?;
+                        *pos = arr
+                            .iter()
+                            .enumerate()
+                            .position(|(i, b)| *pos <= i && b == best)
+                            .unwrap()
+                            + 1;
+                        Some(*best)
+                    })
+                    .zip((0..12).rev())
+                    .map(|(b, i)| b * 10u64.pow(i))
+                    .sum::<u64>()
+            })
             .sum::<u64>()
     }
 
