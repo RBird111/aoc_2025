@@ -1,12 +1,14 @@
 mod day_1;
 mod day_2;
 mod day_3;
+mod day_4;
 
 fn main() {
     let days: Vec<Box<dyn Day>> = vec![
         Box::new(day_1::Day1),
         Box::new(day_2::Day2),
         Box::new(day_3::Day3),
+        Box::new(day_4::Day4),
     ];
     days.into_iter().zip(1..).for_each(print_day);
 }
