@@ -1,4 +1,3 @@
-#![allow(unused)]
 pub struct Day4;
 
 impl crate::Day for Day4 {
@@ -27,7 +26,7 @@ impl Day4 {
                 (0..)
                     .scan(Some(Dir::North), |dir, _| {
                         let res = dir.map(|d| d.get_coordinates(pos, (rows, cols)));
-                        *dir = dir.take()?.next_dir();
+                        *dir = (*dir)?.next_dir();
                         res
                     })
                     .flatten()
@@ -39,7 +38,45 @@ impl Day4 {
     }
 
     fn solve_part_2(input: &str) -> u64 {
-        0
+        let mut data = Day4::process_input(input);
+        let (rows, cols) = (data.len(), data.first().map(|row| row.len()).unwrap_or(0));
+
+        let mut res = 0;
+        let mut removals = vec![];
+
+        loop {
+            for (r, c) in (0..rows).flat_map(|r| (0..cols).map(move |c| (r, c))) {
+                if data[r][c] != b'@' {
+                    continue;
+                }
+
+                let neighbors: Vec<_> = (0..)
+                    .scan(Some(Dir::North), |dir, _| {
+                        let res = dir.map(|d| d.get_coordinates((r, c), (rows, cols)));
+                        *dir = (*dir)?.next_dir();
+                        res
+                    })
+                    .flatten()
+                    .filter(|&(r, c)| data[r][c] == b'@')
+                    .collect();
+
+                if neighbors.len() < 4 {
+                    removals.push((r, c));
+                    res += 1;
+                }
+            }
+
+            if !removals.is_empty() {
+                removals.iter().for_each(|&(r, c)| {
+                    data[r][c] = b'.';
+                });
+                removals.clear();
+            } else {
+                break;
+            }
+        }
+
+        res
     }
 
     fn process_input(input: &str) -> Vec<Vec<u8>> {
@@ -109,7 +146,7 @@ mod tests {
     #[test]
     fn test_part_2() {
         let data = include_str!("../data/day_4_test.txt");
-        let expected = 3121910778619;
+        let expected = 43;
         let actual = Day4::solve_part_2(data);
         assert_eq!(expected, actual);
     }
