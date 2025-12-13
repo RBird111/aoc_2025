@@ -1,5 +1,3 @@
-#![allow(unused)]
-use std::ops::Range;
 pub struct Day6;
 
 impl crate::Day for Day6 {
@@ -16,7 +14,16 @@ impl crate::Day for Day6 {
 
 impl Day6 {
     fn solve_part_1(input: &str) -> u64 {
-        let (nums, ops) = Self::process_input_part_1(input);
+        let (nums, ops) = Day6::process_input_part_1(input);
+        Day6::solve(nums, ops)
+    }
+
+    fn solve_part_2(input: &str) -> u64 {
+        let (nums, ops) = Day6::process_input_part_2(input);
+        Day6::solve(nums, ops)
+    }
+
+    fn solve(nums: Vec<Vec<u64>>, ops: Vec<&str>) -> u64 {
         let mut sum = 0;
         for (i, row) in nums.into_iter().enumerate() {
             let res = match ops[i] {
@@ -29,39 +36,9 @@ impl Day6 {
         sum
     }
 
-    fn solve_part_2(input: &str) -> u64 {
-        let (nums, ops) = Self::process_input_part_2(input);
-        nums.iter()
-            .rev()
-            .map(|row| {
-                let max_len = row
-                    .iter()
-                    .map(|&n| {
-                        let (mut n, mut len) = (n, 0);
-                        while n > 0 {
-                            len += 1;
-                            n /= 10;
-                        }
-                        len
-                    })
-                    .max()
-                    .unwrap();
-                row.iter()
-                    .map(|n| {
-                        let mut s = n.to_string();
-                        while s.len() < max_len {
-                            s.push('0');
-                        }
-                        s
-                    })
-                    .collect::<Vec<_>>()
-            })
-            .for_each(|s| println!("{s:?}"));
-        0
-    }
-
     fn process_input_part_1(input: &str) -> (Vec<Vec<u64>>, Vec<&str>) {
         let (top, bot) = input.rsplit_once("\n").expect("couldn't find a new line?");
+        let ops = bot.split_whitespace().collect();
         let nums_t: Vec<Vec<u64>> = top
             .lines()
             .map(|l| {
@@ -73,13 +50,31 @@ impl Day6 {
         let nums = (0..nums_t[0].len())
             .map(|j| (0..nums_t.len()).map(|i| nums_t[i][j]).collect())
             .collect();
-        let ops = bot.split_whitespace().collect();
         (nums, ops)
     }
 
     fn process_input_part_2(input: &str) -> (Vec<Vec<u64>>, Vec<&str>) {
         let (top, bot) = input.rsplit_once("\n").expect("couldn't find a new line?");
-        (vec![], vec![])
+        let ops = bot.split_whitespace().collect();
+        let nums_t: Vec<Vec<u8>> = top.lines().map(|l| l.bytes().collect()).collect();
+        let nums: Vec<Vec<u64>> = (0..nums_t[0].len())
+            .map(|j| {
+                (0..nums_t.len())
+                    .map(|i| nums_t[i][j] as char)
+                    .collect::<String>()
+                    .trim()
+                    .to_string()
+            })
+            .collect::<Vec<_>>()
+            .join("\n")
+            .split("\n\n")
+            .map(|s| {
+                s.split("\n")
+                    .filter_map(|s| s.parse::<u64>().ok())
+                    .collect()
+            })
+            .collect();
+        (nums, ops)
     }
 }
 
