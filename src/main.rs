@@ -4,6 +4,7 @@ mod day_3;
 mod day_4;
 mod day_5;
 mod day_6;
+mod day_7;
 
 fn main() {
     let days: Vec<Box<dyn Day>> = vec![
@@ -13,6 +14,7 @@ fn main() {
         Box::new(day_4::Day4),
         Box::new(day_5::Day5),
         Box::new(day_6::Day6),
+        Box::new(day_7::Day7),
     ];
     days.into_iter().zip(1..).for_each(print_day);
 }
